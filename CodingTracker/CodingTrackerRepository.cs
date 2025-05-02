@@ -8,4 +8,10 @@ namespace CodingTracker;
 
 internal class CodingTrackerRepository
 {
+    private string connectionString;
+
+    public CodingTrackerRepository(string connectionString)
+    {
+        this.connectionString = connectionString;
+    }
 }

@@ -1,11 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodingTracker;
-
-internal class CodingTrackerManager
+﻿
+namespace CodingTracker
 {
+    internal class CodingTrackerManager
+    {
+        private readonly CodingTrackerController codingController;
+
+        public CodingTrackerManager(CodingTrackerController codingController)
+        {
+            this.codingController = codingController;
+        }
+
+        internal void RunCodingTracker()
+        {
+            
+        }
+    }
 }
