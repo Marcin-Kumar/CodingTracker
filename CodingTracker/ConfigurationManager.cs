@@ -4,24 +4,24 @@ namespace CodingTracker;
 
 internal class ConfigurationManager
 {
-    private static ConfigurationManager? instance;
+    private static ConfigurationManager? s_instance;
 
-    private IConfigurationRoot configurationRoot;
+    private IConfigurationRoot _configurationRoot;
 
     private ConfigurationManager()
     {
-        configurationRoot = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
+        _configurationRoot = new ConfigurationBuilder().SetBasePath(AppContext.BaseDirectory).SetBasePath(AppContext.BaseDirectory).AddJsonFile("appsettings.json", optional: false, reloadOnChange: true).Build();
     }
 
     public static ConfigurationManager GetConfiguration()
     {
-        instance ??= new ConfigurationManager();
-        return instance;
+        s_instance ??= new ConfigurationManager();
+        return s_instance;
     }
 
     public string GetConnectionString()
     {
-        string? connectionString = configurationRoot.GetConnectionString("DefaultConnection");
+        string? connectionString = _configurationRoot.GetConnectionString("DefaultConnection");
         if (connectionString == null)
         {
             throw new ArgumentNullException("SQLite connection string isn't configured");

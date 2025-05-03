@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace CodingTracker;
 
-namespace CodingTracker
+internal record CodingSession(DateTime StartDateTime, DateTime EndDateTime, int? Id = null)
 {
-    internal class CodingSession
-    {
-    }
+    internal TimeSpan Duration => EndDateTime - StartDateTime;
 }
