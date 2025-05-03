@@ -51,19 +51,7 @@ A simple console-based application to track your coding sessions. This project u
 
 1. When you run the application, you will be presented with a menu:
    
-```
-   Hello, Welcome to the Coding Tracker app!
-   Please choose an option from below
-
-   i - to insert an entry
-   r - to remove an entry
-   u - to update an entry
-   v - to view entries
-   e - to exit
-
-   Your option:
-   
-```
+![image](https://github.com/user-attachments/assets/155e7a91-f49e-4af1-ab92-5440b7bde637)
 
 2. Choose an option by entering the corresponding letter:
    - **`i`**: Insert a new coding session.
@@ -87,4 +75,6 @@ A simple console-based application to track your coding sessions. This project u
 ## Example Output
 
 When viewing coding sessions, the output will look like this:
-![alt text](image.png)
+![image](https://github.com/user-attachments/assets/196d9500-5f77-4399-a2be-4b0369166eb2)
+
+
