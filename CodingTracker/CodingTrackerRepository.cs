@@ -46,6 +46,23 @@ internal class CodingTrackerRepository
         }
     }
 
+    internal void DeleteCodingSession(int id)
+    {
+        try
+        {
+            using SQLiteConnection connection = CreateOpenSQLiteConnection();
+            string sql = "DELETE FROM coding_sessions WHERE coding_sessions_id = @id;";
+            if (connection.Execute(sql, new { id }) <= 0)
+            {
+                throw new InvalidDataException();
+            }
+        }
+        catch (SQLiteException ex)
+        {
+            Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+        }
+    }
+
     internal void UpdateCodingSession(CodingSession codingSession)
     {
         try

@@ -13,7 +13,14 @@ internal class CodingTrackerController
 
     internal void ExecuteDeleteProcess()
     {
-        throw new NotImplementedException();
+        int id;
+        Console.WriteLine($"Please enter the Id of the coding session to remove, the Id's can be viewed when viewing the entries");
+        string? idEntered = Console.ReadLine();
+        if (!int.TryParse(idEntered, out id))
+        {
+            throw new ArgumentException("The Id entered was in an inconsistent format");
+        }
+        _codingTrackerRepository.DeleteCodingSession(id);
     }
 
     internal void ExecuteInsertProcess()
