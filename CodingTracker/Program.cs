@@ -2,18 +2,20 @@
 
 internal class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
+        CodingTrackerController codingTrackerController;
         try
         {
             ConfigurationManager configurationManager = ConfigurationManager.GetConfiguration();
             string connectionString = configurationManager.GetConnectionString();
             CodingTrackerRepository codingTrackerRepository = new(connectionString);
-            CodingTrackerController codingTrackerController = new(codingTrackerRepository);
-            new CodingTrackerManager(codingTrackerController).RunCodingTracker();
+            codingTrackerController = new(codingTrackerRepository);
+            codingTrackerController.RunCodingTracker();
         }
-        catch (ArgumentNullException ex) { 
-            Console.WriteLine($"Error during configuration: {ex.Message}\n{ex.StackTrace}");
+        catch (ArgumentNullException ex)
+        {
+            ConsoleLogger.WriteLineInRed($"Error during configuration: {ex.Message}\n{ex.StackTrace}");
         }
     }
 }

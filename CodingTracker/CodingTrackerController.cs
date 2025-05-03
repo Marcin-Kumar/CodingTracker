@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Spectre.Console;
 
 namespace CodingTracker;
 
@@ -11,10 +12,76 @@ internal class CodingTrackerController
         _codingTrackerRepository = codingTrackerRepository;
     }
 
-    internal void ExecuteDeleteProcess()
+    internal void RunCodingTracker()
+    {
+        bool exitApp = false;
+        while (!exitApp)
+        {
+            ShowMenu();
+            char menuOption = GetMenuOption();
+            AnsiConsole.WriteLine();
+            exitApp = ExecuteCorrectProcess(menuOption);
+        }
+    }
+
+    private static void ShowCodingSessionDetails(List<CodingSession> sessions)
+    {
+        Table table = new();
+        table.Border(TableBorder.DoubleEdge);
+        table.ShowRowSeparators = true;
+        table.AddColumns(["ID", "Start Date", "Start Time", "End Time", "Duration"]);
+        foreach (CodingSession record in sessions)
+        {
+            table.AddRow([record.Id?.ToString() ?? "", record.StartDateTime.ToString(CodingTrackerConstants.DateFormat, CultureInfo.InvariantCulture), record.StartDateTime.ToString(CodingTrackerConstants.TimeFormat, CultureInfo.InvariantCulture), record.EndDateTime.ToString(CodingTrackerConstants.TimeFormat, CultureInfo.InvariantCulture), record.Duration.ToString(@"hh\:mm", CultureInfo.InvariantCulture)]);
+        }
+        table.Title("[bold yellow]Coding Sessions[/]");
+        AnsiConsole.Write(table);
+    }
+
+    private bool ExecuteCorrectProcess(char menuOption)
+    {
+        bool exitApp = false;
+        try
+        {
+            switch (menuOption)
+            {
+                case 'i':
+                    ExecuteInsertProcess();
+                    break;
+
+                case 'r':
+                    ExecuteDeleteProcess();
+                    break;
+
+                case 'u':
+                    ExecuteUpdateProcess();
+                    break;
+
+                case 'v':
+                    ExecuteViewingProcess();
+                    break;
+
+                case 'e':
+                    exitApp = true;
+                    break;
+
+                default:
+                    ConsoleLogger.WriteLineInRed("Invalid option entered");
+                    break;
+            }
+        }
+        catch (Exception ex) when (ex is ArgumentException || ex is InvalidDataException)
+        {
+            ConsoleLogger.WriteLineInRed($"{ex.Message}\n");
+        }
+
+        return exitApp;
+    }
+
+    private void ExecuteDeleteProcess()
     {
         int id;
-        Console.WriteLine($"Please enter the Id of the coding session to remove, the Id's can be viewed when viewing the entries");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the Id of the coding session to remove, the Id's can be viewed when viewing the entries");
         string? idEntered = Console.ReadLine();
         if (!int.TryParse(idEntered, out id))
         {
@@ -23,16 +90,16 @@ internal class CodingTrackerController
         _codingTrackerRepository.DeleteCodingSession(id);
     }
 
-    internal void ExecuteInsertProcess()
+    private void ExecuteInsertProcess()
     {
         DateOnly date;
         TimeOnly startTime;
         TimeOnly endTime;
-        Console.WriteLine($"Please enter the date for which you would like to track your coding times, please use the format {CodingTrackerConstants.DateFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the date for which you would like to track your coding times, please use the format {CodingTrackerConstants.DateFormat}");
         string? dateEntered = Console.ReadLine();
-        Console.WriteLine($"Please enter the time at which you started coding, please use the format {CodingTrackerConstants.TimeFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the time at which you started coding, please use the format {CodingTrackerConstants.TimeFormat}");
         string? startTimeEntered = Console.ReadLine();
-        Console.WriteLine($"Please enter the time at which you ended coding, please use the format {CodingTrackerConstants.TimeFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the time at which you ended coding, please use the format {CodingTrackerConstants.TimeFormat}");
         string? endTimeEntered = Console.ReadLine();
         bool isDateEnteredInCorrectFormat = DateOnly.TryParseExact(dateEntered, CodingTrackerConstants.DateFormat, CultureInfo.InvariantCulture,
     DateTimeStyles.None, out date);
@@ -52,19 +119,19 @@ internal class CodingTrackerController
         _codingTrackerRepository.InsertCodingSession(new CodingSession(StartDateTime: new DateTime(date, startTime), EndDateTime: new DateTime(date, endTime)));
     }
 
-    internal void ExecuteUpdateProcess()
+    private void ExecuteUpdateProcess()
     {
         int id;
         DateOnly date;
         TimeOnly startTime;
         TimeOnly endTime;
-        Console.WriteLine($"Please enter Id of the coding session to update an entry, the Id's can be viewed when viewing the entries");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter Id of the coding session to update an entry, the Id's can be viewed when viewing the entries");
         string? idEntered = Console.ReadLine();
-        Console.WriteLine($"Please enter the date for which you would like to track your coding times, please use the format {CodingTrackerConstants.DateFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the date for which you would like to track your coding times, please use the format {CodingTrackerConstants.DateFormat}");
         string? dateEntered = Console.ReadLine();
-        Console.WriteLine($"Please enter the time at which you started coding, please use the format {CodingTrackerConstants.TimeFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the time at which you started coding, please use the format {CodingTrackerConstants.TimeFormat}");
         string? startTimeEntered = Console.ReadLine();
-        Console.WriteLine($"Please enter the time at which you ended coding, please use the format {CodingTrackerConstants.TimeFormat}");
+        ConsoleLogger.WriteLineInBoldYellow($"Please enter the time at which you ended coding, please use the format {CodingTrackerConstants.TimeFormat}");
         string? endTimeEntered = Console.ReadLine();
         bool isIdEnteredInCorrectFormat = int.TryParse(idEntered, out id);
         bool isDateEnteredInCorrectFormat = DateOnly.TryParseExact(dateEntered, CodingTrackerConstants.DateFormat, CultureInfo.InvariantCulture,
@@ -86,36 +153,32 @@ internal class CodingTrackerController
         _codingTrackerRepository.UpdateCodingSession(new CodingSession(new DateTime(date, startTime), new DateTime(date, endTime), id));
     }
 
-    internal void ExecuteViewingProcess()
+    private void ExecuteViewingProcess()
     {
         Console.Clear();
         List<CodingSession> sessions = _codingTrackerRepository.FindAllCodingSessions();
         if (sessions.Count != 0)
         {
-            Console.WriteLine("Coding Session\n\nId\tStart Date\t\tStart Time\t\tEnd Time\t\tDuration");
-            foreach (CodingSession record in sessions)
-            {
-                Console.WriteLine($"{record.Id}\t{record.StartDateTime.ToString(CodingTrackerConstants.DateFormat, CultureInfo.InvariantCulture)}\t\t{record.StartDateTime.ToString(CodingTrackerConstants.TimeFormat, CultureInfo.InvariantCulture)}\t\t\t{record.EndDateTime.ToString(CodingTrackerConstants.TimeFormat, CultureInfo.InvariantCulture)}\t\t\t{record.Duration.ToString(@"hh\:mm", CultureInfo.InvariantCulture)}");
-            }
+            ShowCodingSessionDetails(sessions);
         }
         else
         {
-            Console.WriteLine("No session records found");
+            ConsoleLogger.WriteLineInRed("No session records found");
         }
         Thread.Sleep(1800);
     }
 
-    internal char GetMenuOption() => char.ToLower(Console.ReadKey().KeyChar);
+    private char GetMenuOption() => char.ToLower(Console.ReadKey().KeyChar);
 
-    internal void ShowMenu()
+    private void ShowMenu()
     {
-        Console.WriteLine("Hello, Welcome to the Coding Tracker app!");
-        Console.WriteLine("Please choose an option from below\n");
-        Console.WriteLine("i - to insert an entry");
-        Console.WriteLine("r - to remove an entry");
-        Console.WriteLine("u - to update an entry");
-        Console.WriteLine("v - to view entries");
-        Console.WriteLine("e - to exit\n");
-        Console.WriteLine("Your option: ");
+        ConsoleLogger.WriteLineInBoldYellow("Hello, Welcome to the Coding Tracker app!");
+        ConsoleLogger.WriteLineInBoldYellow("Please choose an option from below\n");
+        ConsoleLogger.WriteLineInBoldYellow("i - to insert an entry");
+        ConsoleLogger.WriteLineInBoldYellow("r - to remove an entry");
+        ConsoleLogger.WriteLineInBoldYellow("u - to update an entry");
+        ConsoleLogger.WriteLineInBoldYellow("v - to view entries");
+        ConsoleLogger.WriteLineInBoldYellow("e - to exit\n");
+        ConsoleLogger.WriteLineInBoldYellow("Your option: ");
     }
 }

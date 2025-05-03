@@ -42,7 +42,7 @@ internal class CodingTrackerRepository
         }
         catch (SQLiteException ex)
         {
-            Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            ConsoleLogger.WriteLineInRed($"{ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -54,12 +54,12 @@ internal class CodingTrackerRepository
             string sql = "DELETE FROM coding_sessions WHERE coding_sessions_id = @id;";
             if (connection.Execute(sql, new { id }) <= 0)
             {
-                throw new InvalidDataException();
+                throw new InvalidDataException("Unable to delete data");
             }
         }
         catch (SQLiteException ex)
         {
-            Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            ConsoleLogger.WriteLineInRed($"{ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -76,7 +76,7 @@ internal class CodingTrackerRepository
         }
         catch (SQLiteException ex)
         {
-            Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            ConsoleLogger.WriteLineInRed($"{ex.Message}\n{ex.StackTrace}");
         }
     }
 
@@ -97,10 +97,11 @@ internal class CodingTrackerRepository
                         coding_sessions_start_date_time TEXT,
                         coding_sessions_end_date_time TEXT
                     );";
+            connection.Execute(sql);
         }
         catch (SQLiteException ex)
         {
-            Console.WriteLine($"{ex.Message}\n{ex.StackTrace}");
+            ConsoleLogger.WriteLineInRed($"{ex.Message}\n{ex.StackTrace}");
         }
     }
 }
